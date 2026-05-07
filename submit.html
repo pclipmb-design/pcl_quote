@@ -332,15 +332,21 @@ async function submitForm(){
   if(!d.contact||!d.email){showToast('Please fill in contact name and email first'); return;}
   if(d.samples.length===0){showToast('Please add at least one sample'); return;}
   if(APPS_SCRIPT_URL==='YOUR_APPS_SCRIPT_URL'){
-    showToast('⚠ Apps Script URL not configured — see setup guide below');
+    showToast('⚠ Apps Script URL not configured');
     return;
   }
   showToast('Sending…');
   try{
-    await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(d)});
-    showToast('✓ Submitted! Email sent to core lab and confirmation sent to you.');
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(d));
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    });
+    showToast('✓ Submitted! Check your Google Sheet and email.');
   }catch(e){
-    showToast('✓ Submitted (check your email for confirmation)');
+    showToast('✗ Error: ' + e.message);
   }
 }
 
@@ -371,4 +377,3 @@ for(let i=0;i<5;i++) addRow();
 </script>
 </body>
 </html>
-
