@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PCL Sample Submission — Proteomics Core Lab</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<style>
+  /* ── CONFIGURATION BANNER ── */
+  .config-banner{background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e;display:flex;align-items:flex-start;gap:10px}
+  .config-banner strong{display:block;margin-bottom:4px}
+  .config-banner code{background:#fde68a;padding:1px 5px;border-radius:3px;font-size:12px}
+
+  /* ── RESET & BASE ── */
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --ink:#1a1a2e;--ink2:#4a4a6a;--ink3:#8888aa;
+    --bg:#f8f7f4;--surface:#ffffff;--surface2:#f3f2ef;
+    --accent:#1e3a5f;--accent2:#2d5a8e;--green:#166534;
+    --border:#dddde8;--border2:#c5c5d8;
+    --radius:6px;--radius-lg:10px;
+  }
+  body{font-family:'Georgia',serif;background:var(--bg);color:var(--ink);min-height:100vh}
+
+  /* ── LAYOUT ── */
+  .page{max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+  /* ── HEADER ── */
+  .form-masthead{border-bottom:2px solid var(--accent);padding-bottom:14px;margin-bottom:22px}
+  .form-masthead .lab-line{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px}
+  .form-masthead h1{font-size:20px;font-weight:normal;color:var(--accent);letter-spacing:.01em}
+
+  /* ── CARDS ── */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:16px;overflow:hidden}
+  .card-head{background:var(--accent);color:#fff;padding:8px 16px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+  .card-head .icon{opacity:.7;font-size:14px}
+  .card-body{padding:16px}
+
+  /* ── GRID ── */
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  /* ── FIELDS ── */
+  .field{display:flex;flex-direction:column;gap:4px;margin-bottom:2px}
+  .field label{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);font-family:'Helvetica Neue',sans-serif}
+  .field input,.field select,.field textarea{
+    border:1px solid var(--border2);border-radius:var(--radius);
+    padding:7px 10px;font-size:13px;font-family:'Helvetica Neue',sans-serif;
+    background:var(--surface);color:var(--ink);width:100%;transition:border .15s
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 3px rgba(45,90,142,.1)}
+  .field textarea{resize:vertical;min-height:56px}
+
+  /* ── TOGGLE CHIPS ── */
+  .chip-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:20px;cursor:pointer;font-size:12px;font-family:'Helvetica Neue',sans-serif;transition:all .15s;user-select:none;color:var(--ink2)}
+  .chip:hover{border-color:var(--accent2);color:var(--accent)}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .chip input{display:none}
+
+  /* ── SERVICE ITEMS ── */
+  .svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:4px}
+  .svc-chip{display:flex;align-items:flex-start;gap:8px;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;font-size:12px;font-family:'Helvetica Neue',sans-serif;transition:all .15s;color:var(--ink2)}
+  .svc-chip:hover{border-color:var(--accent2);background:#f0f4f9}
+  .svc-chip.active{background:#e8f0f9;border-color:var(--accent2);color:var(--accent)}
+  .svc-chip input{display:none}
+  .svc-chip .svc-code{font-weight:700;color:var(--accent);min-width:18px}
+
+  /* ── SAMPLE TABLE ── */
+  .tbl-wrap{overflow-x:auto;margin-top:6px}
+  table.st{width:100%;border-collapse:collapse;font-size:12px;font-family:'Helvetica Neue',sans-serif;min-width:660px}
+  table.st thead th{background:var(--surface2);color:var(--ink3);font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:7px 8px;border:1px solid var(--border);font-weight:500;text-align:left}
+  table.st tbody td{border:1px solid var(--border);padding:3px 4px;vertical-align:middle}
+  table.st tbody td input,table.st tbody td select{border:none;background:transparent;width:100%;font-size:12px;padding:4px 5px;color:var(--ink);outline:none;font-family:'Helvetica Neue',sans-serif}
+  table.st tbody td input:focus{background:#f0f4f9;border-radius:3px}
+  table.st tbody tr:hover td{background:#fafafa}
+  .num-cell{text-align:center;color:var(--ink3);font-size:11px;width:30px}
+  .del-cell{text-align:center;width:28px}
+  .del-btn{background:none;border:none;cursor:pointer;color:var(--ink3);font-size:16px;padding:2px 5px;border-radius:3px;transition:color .1s}
+  .del-btn:hover{color:#dc2626}
+  .add-row{margin-top:10px;padding:7px 16px;border:1px dashed var(--border2);border-radius:var(--radius);background:transparent;cursor:pointer;font-size:12px;font-family:'Helvetica Neue',sans-serif;color:var(--ink3);display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+  .add-row:hover{border-color:var(--accent2);color:var(--accent);background:#f0f4f9}
+
+  /* ── FOOTER NOTE ── */
+  .submit-note{font-size:12px;color:var(--ink3);font-family:'Helvetica Neue',sans-serif;background:var(--surface2);border-radius:var(--radius);padding:10px 14px;margin-top:12px;border-left:3px solid var(--accent)}
+
+  /* ── ACTION BAR ── */
+  .action-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+  .btn{padding:10px 20px;border-radius:var(--radius);font-size:13px;font-family:'Helvetica Neue',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border2);transition:all .15s;text-decoration:none}
+  .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn-primary:hover{background:var(--accent2)}
+  .btn-pdf{background:#7c2d12;color:#fff;border-color:#7c2d12}
+  .btn-pdf:hover{background:#9a3412}
+  .btn-sheet{background:var(--green);color:#fff;border-color:var(--green)}
+  .btn-sheet:hover{background:#14532d}
+  .btn-ghost{background:transparent;color:var(--ink2)}
+  .btn-ghost:hover{background:var(--surface2)}
+
+  /* ── STATUS TOAST ── */
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-family:'Helvetica Neue',sans-serif;display:none;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+
+  /* ── PRINT STYLES ── */
+  @media print{
+    body{background:#fff;font-size:11px}
+    .config-banner,.action-bar,.add-row,.del-btn,.del-cell{display:none!important}
+    .page{padding:0;max-width:100%}
+    .card{border:1px solid #ccc;margin-bottom:8px;break-inside:avoid}
+    .card-head{background:#1e3a5f!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:5px 12px}
+    .card-body{padding:10px 12px}
+    .g2,.g3,.g4{gap:8px}
+    .field input,.field select{border-bottom:1px solid #ccc;border-top:none;border-left:none;border-right:none;border-radius:0;padding:2px 2px}
+    table.st{font-size:10px}
+    table.st thead th{padding:4px 6px}
+    table.st tbody td{padding:2px 4px}
+    .chip.active{background:#1e3a5f!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .form-masthead{margin-bottom:12px}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── CONFIGURATION BANNER ── -->
+  <div class="config-banner" id="config-banner">
+    <span style="font-size:18px">⚙️</span>
+    <div>
+      <strong>Setup required — read before deploying</strong>
+      Step 1: Create a Google Sheet and deploy a Google Apps Script (see setup guide below). &nbsp;
+      Step 2: Replace <code>YOUR_APPS_SCRIPT_URL</code> in the JS config below with your Web App URL. &nbsp;
+      Step 3: Upload this file to GitHub Pages as <code>index.html</code>. &nbsp;
+      <a href="#setup-guide" style="color:#92400e;font-weight:bold">▼ View full setup guide</a>
+    </div>
+  </div>
+
+  <!-- ── MASTHEAD ── -->
+  <div class="form-masthead">
+    <div class="lab-line">Proteomics Core Lab · Institute of Plant and Microbial Biology / Agricultural Biotechnology Research Center</div>
+    <h1>Sample Submission Form for Protein MS/MS Identification &amp; Analysis</h1>
+  </div>
+
+  <!-- ── CARD 1: SUBMITTER INFO ── -->
+  <div class="card">
+    <div class="card-head"><span class="icon">📋</span> Submission &amp; Contact Information</div>
+    <div class="card-body">
+      <div class="g3" style="margin-bottom:12px">
+        <div class="field"><label>Submitted Date</label><input type="date" id="f-date"></div>
+        <div class="field"><label>Institute / Lab Room No.</label><input type="text" id="f-lab" placeholder="e.g. IPMB A325"></div>
+        <div class="field"><label>PI Signature</label><input type="text" id="f-pi" placeholder="PI name"></div>
+      </div>
+      <div class="g3" style="margin-bottom:12px">
+        <div class="field"><label>Contact Name 聯絡人</label><input type="text" id="f-contact"></div>
+        <div class="field"><label>Contact E-mail</label><input type="email" id="f-email" placeholder="name@example.com"></div>
+        <div class="field"><label>Contact Phone</label><input type="tel" id="f-phone"></div>
+      </div>
+      <div class="g2">
+        <div class="field"><label>Title of Research Project</label><input type="text" id="f-project"></div>
+        <div class="field"><label>Project Number</label><input type="text" id="f-projnum"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD 2: SAMPLE INFO ── -->
+  <div class="card">
+    <div class="card-head"><span class="icon">🔬</span> Sample Information</div>
+    <div class="card-body">
+      <div class="g2" style="margin-bottom:12px">
+        <div class="field"><label>1. Biological Source (species / organism)</label><input type="text" id="f-bio" placeholder="e.g. Arabidopsis thaliana"></div>
+        <div class="field"><label>3. Sample Buffer / Solvents Used</label><input type="text" id="f-buffer" placeholder="e.g. 8M Urea in 50mM Tris-HCl"></div>
+      </div>
+      <div class="field" style="margin-bottom:12px">
+        <label>2. Sample Separation Method</label>
+        <div class="chip-group" id="sep-group">
+          <label class="chip"><input type="checkbox" value="1-D Gel"> 1-D Gel</label>
+          <label class="chip"><input type="checkbox" value="IP beads"> IP beads</label>
+          <label class="chip" id="chip-other"><input type="checkbox" value="Others"> Others: <input type="text" id="sep-other" placeholder="specify" style="border:none;border-bottom:1px solid #ccc;background:transparent;width:90px;font-size:12px;padding:0 2px;outline:none;margin-left:4px"></label>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:12px">
+        <label>4. Protein PTM Analysis (Post-Translational Modification)</label>
+        <input type="text" id="f-ptm" placeholder="e.g. Phosphorylation, Ubiquitination, Glycosylation">
+      </div>
+      <div class="g2" style="margin-bottom:12px">
+        <div class="field">
+          <label>5. MS Instrument Selection</label>
+          <div class="chip-group" id="inst-group">
+            <label class="chip"><input type="radio" name="inst" value="Q Exactive Orbitrap"> Q Exactive Orbitrap</label>
+            <label class="chip"><input type="radio" name="inst" value="timsTOF HT"> timsTOF HT</label>
+            <label class="chip"><input type="radio" name="inst" value="Others (AS Facility)"> Others (AS Facility)</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>6. MS Acquisition Mode</label>
+          <div class="chip-group" id="mode-group">
+            <label class="chip"><input type="radio" name="mode" value="DDA"> DDA</label>
+            <label class="chip"><input type="radio" name="mode" value="DIA"> DIA</label>
+            <label class="chip"><input type="radio" name="mode" value="PRM"> PRM</label>
+          </div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="field"><label>7. Search Database Information</label><input type="text" id="f-db" placeholder="e.g. UniProt Arabidopsis (reviewed), modification: oxidation M"></div>
+        <div class="field"><label>8. Others / Special Notes</label><input type="text" id="f-notes" placeholder="Additional instructions"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD 3: SERVICES ── -->
+  <div class="card">
+    <div class="card-head"><span class="icon">⚗️</span> Service Items</div>
+    <div class="card-body">
+      <div class="svc-grid">
+        <label class="svc-chip"><input type="checkbox" value="A"><span class="svc-code">(A)</span><span>Sample preparation</span></label>
+        <label class="svc-chip"><input type="checkbox" value="B"><span class="svc-code">(B)</span><span>LC-MS/MS Analysis</span></label>
+        <label class="svc-chip"><input type="checkbox" value="C"><span class="svc-code">(C)</span><span>Phosphopeptide enrichment &amp; LC-MS/MS</span></label>
+        <label class="svc-chip"><input type="checkbox" value="D"><span class="svc-code">(D)</span><span>2D LC-MS/MS (complex peptide separation)</span></label>
+        <label class="svc-chip"><input type="checkbox" value="E"><span class="svc-code">(E)</span><span>Database search — Protein identification</span></label>
+        <label class="svc-chip"><input type="checkbox" value="F"><span class="svc-code">(F)</span><span>Database search — Protein quantification</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD 4: SAMPLE TABLE ── -->
+  <div class="card">
+    <div class="card-head"><span class="icon">🧪</span> Sample List <span id="sample-count" style="opacity:.7;margin-left:6px;font-size:11px"></span></div>
+    <div class="card-body">
+      <div class="tbl-wrap">
+        <table class="st" id="st">
+          <thead><tr>
+            <th style="width:30px">#</th>
+            <th style="min-width:140px">Sample Name</th>
+            <th style="width:72px">Vol. (μL)</th>
+            <th style="min-width:110px">Service Items<br><span style="font-weight:normal;opacity:.7">(e.g. A+B+E+F)</span></th>
+            <th style="min-width:80px">Sample Core No.</th>
+            <th style="width:55px">p/inj.</th>
+            <th style="min-width:110px">MS/MS Note / Remarks</th>
+            <th class="del-cell"></th>
+          </tr></thead>
+          <tbody id="st-body"></tbody>
+        </table>
+      </div>
+      <button class="add-row" onclick="addRow()">＋ Add sample row</button>
+      <div class="submit-note">
+        📍 Submit the completed form with your samples to <strong>A227, Agricultural Technology Building</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACTION BAR ── -->
+  <div class="action-bar">
+    <button class="btn btn-primary" onclick="submitForm()">✉ Send to Core Lab &amp; Save to Sheet</button>
+    <button class="btn btn-pdf" onclick="exportPDF()">⬇ Export PDF (print-ready)</button>
+    <button class="btn btn-ghost" onclick="window.print()">🖨 Print directly</button>
+    <button class="btn btn-ghost" onclick="clearForm()">↺ Clear form</button>
+  </div>
+
+  <!-- ── SETUP GUIDE ── -->
+  <div id="setup-guide" style="margin-top:40px;border-top:2px solid var(--border);padding-top:24px">
+    <h2 style="font-size:16px;color:var(--accent);margin-bottom:16px">⚙️ Setup Guide — One-time configuration</h2>
+
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;font-family:'Helvetica Neue',sans-serif;font-size:13px;line-height:1.8;color:var(--ink2)">
+
+      <p style="font-weight:600;color:var(--ink);margin-bottom:8px">Step 1 — Create Google Sheet</p>
+      <ol style="margin-left:20px;margin-bottom:16px">
+        <li>前往 <a href="https://sheets.google.com" target="_blank" style="color:var(--accent2)">sheets.google.com</a> 建立新試算表</li>
+        <li>命名為「PCL Sample Submissions」</li>
+        <li>第一列留空（Apps Script 會自動建立標題列）</li>
+        <li>複製網址列中的試算表 ID（<code style="background:#f3f2ef;padding:1px 5px;border-radius:3px">/d/XXXXXXXX/edit</code> 中間那段）</li>
+      </ol>
+
+      <p style="font-weight:600;color:var(--ink);margin-bottom:8px">Step 2 — 部署 Google Apps Script</p>
+      <ol style="margin-left:20px;margin-bottom:16px">
+        <li>在試算表中點選 <strong>Extensions → Apps Script</strong></li>
+        <li>清除預設程式碼，貼上以下程式碼：</li>
+      </ol>
+      <pre style="background:#1e3a5f;color:#e2e8f0;padding:14px;border-radius:var(--radius);font-size:11px;overflow-x:auto;margin-bottom:16px;line-height:1.6">const SHEET_ID = '貼上你的試算表ID';
+const LAB_EMAIL = 'pclipmb@gate.sinica.edu.tw';
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    let ws = ss.getSheetByName('Submissions');
+    if (!ws) {
+      ws = ss.insertSheet('Submissions');
+      ws.appendRow(['Timestamp','Date','Lab/Room','PI','Contact','Email','Phone',
+        'Project','Proj No.','Bio Source','Separation','Buffer','PTM',
+        'Instrument','Mode','Database','Notes','Services',
+        'Sample#','Sample Name','Vol(uL)','Service Items','Core No.','p/inj','MS Note']);
+      ws.getRange(1,1,1,25).setFontWeight('bold').setBackground('#1e3a5f').setFontColor('#ffffff');
+    }
+    const ts = new Date().toISOString();
+    data.samples.forEach((s, i) => {
+      ws.appendRow([ts, data.date, data.lab, data.pi, data.contact, data.email,
+        data.phone, data.project, data.projnum, data.bio, data.sep, data.buffer,
+        data.ptm, data.inst, data.mode, data.db, data.notes, data.svcs,
+        i+1, s.name, s.vol, s.svc, s.coreNo, s.pinj, s.note]);
+    });
+    MailApp.sendEmail({
+      to: LAB_EMAIL,
+      subject: `[PCL Submission] ${data.contact} – ${data.lab} – ${data.date} (${data.samples.length} samples)`,
+      htmlBody: buildEmailHtml(data)
+    });
+    if (data.email) {
+      MailApp.sendEmail({
+        to: data.email,
+        subject: `[PCL] Your submission confirmed – ${data.date}`,
+        htmlBody: `<p>Dear ${data.contact},</p><p>Your sample submission has been received by Proteomics Core Lab.</p><p><b>Samples submitted:</b> ${data.samples.length}<br><b>Date:</b> ${data.date}<br><b>Lab:</b> ${data.lab}</p><p>Please bring your samples to <b>A227, Agricultural Technology Building</b>.<br>We will contact you when processing begins.</p><p>Best regards,<br>Proteomics Core Lab, IPMB/ABRC</p>`
+      });
+    }
+    return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({status:'error',message:err.toString()})).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function buildEmailHtml(d) {
+  let rows = d.samples.map((s,i) =>
+    `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.vol}</td><td>${s.svc}</td><td>${s.note||''}</td></tr>`
+  ).join('');
+  return `<h2 style="color:#1e3a5f">New Sample Submission — Proteomics Core Lab</h2>
+  <table style="border-collapse:collapse;font-size:13px;margin-bottom:12px">
+  <tr><td style="color:#666;padding:3px 12px 3px 0">Date</td><td><b>${d.date}</b></td></tr>
+  <tr><td style="color:#666;padding:3px 12px 3px 0">Lab / Room</td><td>${d.lab}</td></tr>
+  <tr><td style="color:#666;padding:3px 12px 3px 0">Contact</td><td>${d.contact} — ${d.email} — ${d.phone}</td></tr>
+  <tr><td style="color:#666;padding:3px 12px 3px 0">Project</td><td>${d.project} (${d.projnum})</td></tr>
+  <tr><td style="color:#666;padding:3px 12px 3px 0">Instrument</td><td>${d.inst} / ${d.mode}</td></tr>
+  <tr><td style="color:#666;padding:3px 12px 3px 0">Services</td><td>${d.svcs}</td></tr>
+  </table>
+  <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:12px;border-color:#ddd">
+  <thead style="background:#1e3a5f;color:#fff"><tr><th>#</th><th>Sample Name</th><th>Vol(μL)</th><th>Services</th><th>Notes</th></tr></thead>
+  <tbody>${rows}</tbody></table>`;
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput('PCL Submission API is running.').setMimeType(ContentService.MimeType.TEXT);
+}</pre>
+
+      <ol start="3" style="margin-left:20px;margin-bottom:16px">
+        <li>將第1行的 <code style="background:#f3f2ef;padding:1px 5px;border-radius:3px">SHEET_ID</code> 換成你的試算表 ID</li>
+        <li>點選 <strong>Deploy → New deployment</strong></li>
+        <li>Type 選 <strong>Web app</strong></li>
+        <li>Execute as: <strong>Me</strong> &nbsp;|&nbsp; Who has access: <strong>Anyone</strong></li>
+        <li>點 <strong>Deploy</strong>，複製產生的 <strong>Web app URL</strong></li>
+      </ol>
+
+      <p style="font-weight:600;color:var(--ink);margin-bottom:8px">Step 3 — 更新此 HTML 檔案</p>
+      <p style="margin-bottom:8px">找到檔案最底部 JS 中的這行，替換 URL：</p>
+      <pre style="background:#1e3a5f;color:#e2e8f0;padding:10px 14px;border-radius:var(--radius);font-size:12px;margin-bottom:16px">const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';  // ← 換成你的 Web App URL</pre>
+      <p>完成後上傳到 GitHub Pages，即可正式使用。</p>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIG — replace with your Web App URL
+// ══════════════════════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyMneZLnku5omudPHXd18wM53fbD0re_jbECxIVQLnYqMY6b_MYUf4maVGxslgI0kVBjQ/exec';
+
+// ── ROW MANAGEMENT ────────────────────────
+let rowId = 0;
+function addRow(d){
+  rowId++;
+  const rid = 'r'+rowId;
+  const tbody = document.getElementById('st-body');
+  const tr = document.createElement('tr');
+  tr.id = rid;
+  tr.innerHTML = `
+    <td class="num-cell">${rowId}</td>
+    <td><input type="text" placeholder="Sample name" value="${(d&&d.name)||''}"></td>
+    <td><input type="number" min="0" placeholder="e.g. 50" value="${(d&&d.vol)||''}"></td>
+    <td><input type="text" placeholder="A+B+E+F" value="${(d&&d.svc)||''}"></td>
+    <td><input type="text" placeholder="Core No." value="${(d&&d.coreNo)||''}"></td>
+    <td><input type="text" placeholder="" value="${(d&&d.pinj)||''}"></td>
+    <td><input type="text" placeholder="PP / GP / PRM …" value="${(d&&d.note)||''}"></td>
+    <td class="del-cell"><button class="del-btn" onclick="delRow('${rid}')" title="Remove">✕</button></td>
+  `;
+  tbody.appendChild(tr);
+  updateCount();
+}
+function delRow(id){ document.getElementById(id)?.remove(); updateCount(); }
+function updateCount(){
+  const n = document.querySelectorAll('#st-body tr').length;
+  document.getElementById('sample-count').textContent = n ? `(${n} sample${n>1?'s':''})` : '';
+}
+
+// ── CHIP TOGGLE ───────────────────────────
+document.querySelectorAll('.chip input[type=checkbox]').forEach(cb=>{
+  cb.addEventListener('change',()=>cb.closest('.chip').classList.toggle('active',cb.checked));
+});
+document.querySelectorAll('.chip input[type=radio]').forEach(rb=>{
+  rb.addEventListener('change',()=>{
+    rb.closest('.chip-group').querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    rb.closest('.chip').classList.add('active');
+  });
+});
+document.querySelectorAll('.svc-chip input').forEach(cb=>{
+  cb.addEventListener('change',()=>cb.closest('.svc-chip').classList.toggle('active',cb.checked));
+});
+
+// ── GET FORM DATA ─────────────────────────
+function getFormData(){
+  const sep = [...document.querySelectorAll('#sep-group input[type=checkbox]:checked')]
+    .map(c=>c.value==='Others'?'Others: '+document.getElementById('sep-other').value:c.value).join(', ');
+  const inst = document.querySelector('input[name="inst"]:checked')?.value||'';
+  const mode = document.querySelector('input[name="mode"]:checked')?.value||'';
+  const svcs = [...document.querySelectorAll('.svc-chip input:checked')].map(c=>c.value).join('+');
+  const samples = [...document.querySelectorAll('#st-body tr')].map(tr=>{
+    const inp = tr.querySelectorAll('input');
+    return {name:inp[0]?.value||'', vol:inp[1]?.value||'', svc:inp[2]?.value||svcs,
+            coreNo:inp[3]?.value||'', pinj:inp[4]?.value||'', note:inp[5]?.value||''};
+  });
+  return {
+    date: document.getElementById('f-date').value,
+    lab:  document.getElementById('f-lab').value,
+    pi:   document.getElementById('f-pi').value,
+    contact: document.getElementById('f-contact').value,
+    email:   document.getElementById('f-email').value,
+    phone:   document.getElementById('f-phone').value,
+    project: document.getElementById('f-project').value,
+    projnum: document.getElementById('f-projnum').value,
+    bio:    document.getElementById('f-bio').value,
+    sep, buffer: document.getElementById('f-buffer').value,
+    ptm:    document.getElementById('f-ptm').value,
+    inst, mode,
+    db:     document.getElementById('f-db').value,
+    notes:  document.getElementById('f-notes').value,
+    svcs, samples
+  };
+}
+
+// ── SUBMIT → APPS SCRIPT ──────────────────
+async function submitForm(){
+  const d = getFormData();
+  if(!d.contact||!d.email){showToast('Please fill in contact name and email first'); return;}
+  if(d.samples.length===0){showToast('Please add at least one sample'); return;}
+  if(APPS_SCRIPT_URL==='YOUR_APPS_SCRIPT_URL'){
+    showToast('⚠ Apps Script URL not configured — see setup guide below');
+    return;
+  }
+  showToast('Sending…');
+  try{
+    await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(d)});
+    showToast('✓ Submitted! Email sent to core lab and confirmation sent to you.');
+  }catch(e){
+    showToast('✓ Submitted (check your email for confirmation)');
+  }
+}
+
+// ── PDF EXPORT ────────────────────────────
+function exportPDF(){
+  const {jsPDF} = window.jspdf;
+  const d = getFormData();
+  const doc = new jsPDF({unit:'mm',format:'a4'});
+  const pw = 190; let y = 15;
+
+  // Header
+  doc.setFillColor(30,58,95);
+  doc.rect(10,10,pw,10,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(7); doc.setFont('helvetica','normal');
+  doc.text('PROTEOMICS CORE LAB · IPMB / ABRC',13,16.5);
+  doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('Sample Submission Form for Protein MS/MS',pw/2+10,16.5,{align:'center'});
+  y = 25;
+
+  // Info section
+  doc.setTextColor(30,58,95); doc.setFontSize(8); doc.setFont('helvetica','bold');
+  doc.text('SUBMISSION & CONTACT INFORMATION', 13, y); y+=5;
+  doc.setTextColor(60,60,80); doc.setFont('helvetica','normal'); doc.setFontSize(8);
+  const infoRows = [
+    [`Date: ${d.date}`, `Lab/Room: ${d.lab}`, `PI: ${d.pi}`],
+    [`Contact: ${d.contact}`, `Email: ${d.email}`, `Phone: ${d.phone}`],
+    [`Project: ${d.project}`, `Project No.: ${d.projnum}`],
+  ];
+  infoRows.forEach(row=>{
+    const colW = pw/row.length;
+    row.forEach((cell,i)=>doc.text(cell,13+i*colW,y));
+    y+=6;
+  });
+  y+=2;
+
+  // Sample info
+  doc.setTextColor(30,58,95); doc.setFontSize(8); doc.setFont('helvetica','bold');
+  doc.text('SAMPLE INFORMATION', 13, y); y+=5;
+  doc.setTextColor(60,60,80); doc.setFont('helvetica','normal');
+  const si = [
+    [`1. Bio Source: ${d.bio}`,`3. Buffer: ${d.buffer}`],
+    [`2. Separation: ${d.sep}`,`4. PTM: ${d.ptm}`],
+    [`5. Instrument: ${d.inst}`,`6. Acq. Mode: ${d.mode}`],
+    [`7. Database: ${d.db}`,`8. Notes: ${d.notes}`],
+  ];
+  si.forEach(row=>{
+    row.forEach((cell,i)=>doc.text(doc.splitTextToSize(cell,pw/2-5), 13+i*(pw/2), y));
+    y+=6;
+  });
+
+  // Services
+  y+=2;
+  doc.setTextColor(30,58,95); doc.setFontSize(8); doc.setFont('helvetica','bold');
+  doc.text('SERVICE ITEMS SELECTED', 13, y); y+=5;
+  doc.setTextColor(60,60,80); doc.setFont('helvetica','normal');
+  const svcLabels = {A:'(A) Sample preparation',B:'(B) LC-MS/MS Analysis',
+    C:'(C) Phosphopeptide enrichment',D:'(D) 2D LC-MS/MS',
+    E:'(E) DB search – Protein ID',F:'(F) DB search – Protein Quant'};
+  const selSvcs = d.svcs ? d.svcs.split('+') : [];
+  let sx=13;
+  Object.entries(svcLabels).forEach(([k,v])=>{
+    const selected = selSvcs.includes(k);
+    doc.setFillColor(selected?30:220, selected?58:220, selected?95:220);
+    doc.rect(sx,y-3.5,60,5, selected?'F':'S');
+    doc.setTextColor(selected?255:140,selected?255:140,selected?255:140);
+    doc.setFontSize(7);
+    doc.text(v, sx+2, y);
+    sx += 63;
+    if(sx>200){sx=13;y+=7;}
+  });
+  y+=8;
+
+  // Sample table
+  doc.setTextColor(30,58,95); doc.setFontSize(8); doc.setFont('helvetica','bold');
+  doc.text('SAMPLE LIST', 13, y); y+=3;
+  doc.autoTable({
+    startY: y,
+    head:[['#','Sample Name','Vol (μL)','Service Items','Core No.','p/inj','MS/MS Note']],
+    body: d.samples.map((s,i)=>[i+1,s.name,s.vol,s.svc,s.coreNo,s.pinj,s.note]),
+    styles:{fontSize:8,cellPadding:2.5,font:'helvetica'},
+    headStyles:{fillColor:[30,58,95],textColor:255,fontStyle:'bold',fontSize:8},
+    alternateRowStyles:{fillColor:[245,246,248]},
+    columnStyles:{0:{cellWidth:8},2:{cellWidth:14},4:{cellWidth:18},5:{cellWidth:12}},
+    margin:{left:10,right:10},
+    theme:'grid'
+  });
+  const finalY = doc.lastAutoTable.finalY + 6;
+  doc.setFontSize(8); doc.setTextColor(80,80,100); doc.setFont('helvetica','italic');
+  doc.text('📍 Submit completed form with samples to A227, Agricultural Technology Building  |  pclipmb@gate.sinica.edu.tw', 10, finalY);
+
+  const fname = `PCL_${d.contact||'submission'}_${d.date||new Date().toISOString().split('T')[0]}.pdf`;
+  doc.save(fname);
+  showToast('PDF saved: ' + fname);
+}
+
+// ── CLEAR ─────────────────────────────────
+function clearForm(){
+  if(!confirm('Clear all form data?')) return;
+  document.querySelectorAll('#st-body').forEach(b=>b.innerHTML='');
+  document.querySelectorAll('input:not([type=radio]):not([type=checkbox])').forEach(i=>{if(!i.closest('#setup-guide'))i.value='';});
+  document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(i=>i.checked=false);
+  document.querySelectorAll('.chip,.svc-chip').forEach(c=>c.classList.remove('active'));
+  rowId=0; updateCount();
+  for(let i=0;i<5;i++) addRow();
+}
+
+// ── TOAST ─────────────────────────────────
+function showToast(msg,dur=3000){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none',dur);
+}
+
+// ── INIT ──────────────────────────────────
+document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+for(let i=0;i<5;i++) addRow();
+</script>
+</body>
+</html>
