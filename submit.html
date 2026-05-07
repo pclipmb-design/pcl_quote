@@ -4,13 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PCL Sample Submission — Proteomics Core Lab</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <style>
   /* ── CONFIGURATION BANNER ── */
-  .config-banner{background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e;display:flex;align-items:flex-start;gap:10px}
-  .config-banner strong{display:block;margin-bottom:4px}
-  .config-banner code{background:#fde68a;padding:1px 5px;border-radius:3px;font-size:12px}
 
   /* ── RESET & BASE ── */
   *{box-sizing:border-box;margin:0;padding:0}
@@ -24,10 +19,10 @@
   body{font-family:'Georgia',serif;background:var(--bg);color:var(--ink);min-height:100vh}
 
   /* ── LAYOUT ── */
-  .page{max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem}
+  .page{max-width:820px;margin:0 auto;padding:2rem 3rem 4rem}
 
   /* ── HEADER ── */
-  .form-masthead{border-bottom:2px solid var(--accent);padding-bottom:14px;margin-bottom:22px}
+  .form-masthead{border-bottom:2px solid var(--accent);padding-bottom:14px;margin-bottom:22px;padding-left:1rem;padding-right:1rem}
   .form-masthead .lab-line{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px}
   .form-masthead h1{font-size:20px;font-weight:normal;color:var(--accent);letter-spacing:.01em}
 
@@ -105,7 +100,7 @@
   /* ── PRINT STYLES ── */
   @media print{
     body{background:#fff;font-size:11px}
-    .config-banner,.action-bar,.add-row,.del-btn,.del-cell{display:none!important}
+    .action-bar,.add-row,.del-btn,.del-cell{display:none!important}
     .page{padding:0;max-width:100%}
     .card{border:1px solid #ccc;margin-bottom:8px;break-inside:avoid}
     .card-head{background:#1e3a5f!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:5px 12px}
@@ -124,16 +119,7 @@
 <div class="page">
 
   <!-- ── CONFIGURATION BANNER ── -->
-  <div class="config-banner" id="config-banner">
-    <span style="font-size:18px">⚙️</span>
-    <div>
-      <strong>Setup required — read before deploying</strong>
-      Step 1: Create a Google Sheet and deploy a Google Apps Script (see setup guide below). &nbsp;
-      Step 2: Replace <code>YOUR_APPS_SCRIPT_URL</code> in the JS config below with your Web App URL. &nbsp;
-      Step 3: Upload this file to GitHub Pages as <code>index.html</code>. &nbsp;
-      <a href="#setup-guide" style="color:#92400e;font-weight:bold">▼ View full setup guide</a>
-    </div>
-  </div>
+</div>
 
   <!-- ── MASTHEAD ── -->
   <div class="form-masthead">
@@ -211,14 +197,14 @@
   <div class="card">
     <div class="card-head"><span class="icon">⚗️</span> Service Items</div>
     <div class="card-body">
-      <div class="svc-grid">
-        <label class="svc-chip"><input type="checkbox" value="A"><span class="svc-code">(A)</span><span>Sample preparation</span></label>
-        <label class="svc-chip"><input type="checkbox" value="B"><span class="svc-code">(B)</span><span>LC-MS/MS Analysis</span></label>
-        <label class="svc-chip"><input type="checkbox" value="C"><span class="svc-code">(C)</span><span>Phosphopeptide enrichment &amp; LC-MS/MS</span></label>
-        <label class="svc-chip"><input type="checkbox" value="D"><span class="svc-code">(D)</span><span>2D LC-MS/MS (complex peptide separation)</span></label>
-        <label class="svc-chip"><input type="checkbox" value="E"><span class="svc-code">(E)</span><span>Database search — Protein identification</span></label>
-        <label class="svc-chip"><input type="checkbox" value="F"><span class="svc-code">(F)</span><span>Database search — Protein quantification</span></label>
-      </div>
+      <p style="font-size:12px;font-family:'Helvetica Neue',sans-serif;color:var(--ink2);line-height:2">
+        <span style="font-weight:700;color:var(--accent)">(A)</span> Sample preparation &nbsp;|&nbsp;
+        <span style="font-weight:700;color:var(--accent)">(B)</span> LC-MS/MS Analysis &nbsp;|&nbsp;
+        <span style="font-weight:700;color:var(--accent)">(C)</span> Phosphopeptide enrichment &amp; LC-MS/MS &nbsp;|&nbsp;
+        <span style="font-weight:700;color:var(--accent)">(D)</span> 2D LC-MS/MS (complex peptide separation) &nbsp;|&nbsp;
+        <span style="font-weight:700;color:var(--accent)">(E)</span> Database search — Protein identification &nbsp;|&nbsp;
+        <span style="font-weight:700;color:var(--accent)">(F)</span> Database search — Protein quantification
+      </p>
     </div>
   </div>
 
@@ -257,101 +243,6 @@
   </div>
 
   <!-- ── SETUP GUIDE ── -->
-  <div id="setup-guide" style="margin-top:40px;border-top:2px solid var(--border);padding-top:24px">
-    <h2 style="font-size:16px;color:var(--accent);margin-bottom:16px">⚙️ Setup Guide — One-time configuration</h2>
-
-    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;font-family:'Helvetica Neue',sans-serif;font-size:13px;line-height:1.8;color:var(--ink2)">
-
-      <p style="font-weight:600;color:var(--ink);margin-bottom:8px">Step 1 — Create Google Sheet</p>
-      <ol style="margin-left:20px;margin-bottom:16px">
-        <li>前往 <a href="https://sheets.google.com" target="_blank" style="color:var(--accent2)">sheets.google.com</a> 建立新試算表</li>
-        <li>命名為「PCL Sample Submissions」</li>
-        <li>第一列留空（Apps Script 會自動建立標題列）</li>
-        <li>複製網址列中的試算表 ID（<code style="background:#f3f2ef;padding:1px 5px;border-radius:3px">/d/XXXXXXXX/edit</code> 中間那段）</li>
-      </ol>
-
-      <p style="font-weight:600;color:var(--ink);margin-bottom:8px">Step 2 — 部署 Google Apps Script</p>
-      <ol style="margin-left:20px;margin-bottom:16px">
-        <li>在試算表中點選 <strong>Extensions → Apps Script</strong></li>
-        <li>清除預設程式碼，貼上以下程式碼：</li>
-      </ol>
-      <pre style="background:#1e3a5f;color:#e2e8f0;padding:14px;border-radius:var(--radius);font-size:11px;overflow-x:auto;margin-bottom:16px;line-height:1.6">const SHEET_ID = '貼上你的試算表ID';
-const LAB_EMAIL = 'pclipmb@gate.sinica.edu.tw';
-
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const ss = SpreadsheetApp.openById(SHEET_ID);
-    let ws = ss.getSheetByName('Submissions');
-    if (!ws) {
-      ws = ss.insertSheet('Submissions');
-      ws.appendRow(['Timestamp','Date','Lab/Room','PI','Contact','Email','Phone',
-        'Project','Proj No.','Bio Source','Separation','Buffer','PTM',
-        'Instrument','Mode','Database','Notes','Services',
-        'Sample#','Sample Name','Vol(uL)','Service Items','Core No.','p/inj','MS Note']);
-      ws.getRange(1,1,1,25).setFontWeight('bold').setBackground('#1e3a5f').setFontColor('#ffffff');
-    }
-    const ts = new Date().toISOString();
-    data.samples.forEach((s, i) => {
-      ws.appendRow([ts, data.date, data.lab, data.pi, data.contact, data.email,
-        data.phone, data.project, data.projnum, data.bio, data.sep, data.buffer,
-        data.ptm, data.inst, data.mode, data.db, data.notes, data.svcs,
-        i+1, s.name, s.vol, s.svc, s.coreNo, s.pinj, s.note]);
-    });
-    MailApp.sendEmail({
-      to: LAB_EMAIL,
-      subject: `[PCL Submission] ${data.contact} – ${data.lab} – ${data.date} (${data.samples.length} samples)`,
-      htmlBody: buildEmailHtml(data)
-    });
-    if (data.email) {
-      MailApp.sendEmail({
-        to: data.email,
-        subject: `[PCL] Your submission confirmed – ${data.date}`,
-        htmlBody: `<p>Dear ${data.contact},</p><p>Your sample submission has been received by Proteomics Core Lab.</p><p><b>Samples submitted:</b> ${data.samples.length}<br><b>Date:</b> ${data.date}<br><b>Lab:</b> ${data.lab}</p><p>Please bring your samples to <b>A227, Agricultural Technology Building</b>.<br>We will contact you when processing begins.</p><p>Best regards,<br>Proteomics Core Lab, IPMB/ABRC</p>`
-      });
-    }
-    return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({status:'error',message:err.toString()})).setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function buildEmailHtml(d) {
-  let rows = d.samples.map((s,i) =>
-    `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.vol}</td><td>${s.svc}</td><td>${s.note||''}</td></tr>`
-  ).join('');
-  return `<h2 style="color:#1e3a5f">New Sample Submission — Proteomics Core Lab</h2>
-  <table style="border-collapse:collapse;font-size:13px;margin-bottom:12px">
-  <tr><td style="color:#666;padding:3px 12px 3px 0">Date</td><td><b>${d.date}</b></td></tr>
-  <tr><td style="color:#666;padding:3px 12px 3px 0">Lab / Room</td><td>${d.lab}</td></tr>
-  <tr><td style="color:#666;padding:3px 12px 3px 0">Contact</td><td>${d.contact} — ${d.email} — ${d.phone}</td></tr>
-  <tr><td style="color:#666;padding:3px 12px 3px 0">Project</td><td>${d.project} (${d.projnum})</td></tr>
-  <tr><td style="color:#666;padding:3px 12px 3px 0">Instrument</td><td>${d.inst} / ${d.mode}</td></tr>
-  <tr><td style="color:#666;padding:3px 12px 3px 0">Services</td><td>${d.svcs}</td></tr>
-  </table>
-  <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:12px;border-color:#ddd">
-  <thead style="background:#1e3a5f;color:#fff"><tr><th>#</th><th>Sample Name</th><th>Vol(μL)</th><th>Services</th><th>Notes</th></tr></thead>
-  <tbody>${rows}</tbody></table>`;
-}
-
-function doGet(e) {
-  return ContentService.createTextOutput('PCL Submission API is running.').setMimeType(ContentService.MimeType.TEXT);
-}</pre>
-
-      <ol start="3" style="margin-left:20px;margin-bottom:16px">
-        <li>將第1行的 <code style="background:#f3f2ef;padding:1px 5px;border-radius:3px">SHEET_ID</code> 換成你的試算表 ID</li>
-        <li>點選 <strong>Deploy → New deployment</strong></li>
-        <li>Type 選 <strong>Web app</strong></li>
-        <li>Execute as: <strong>Me</strong> &nbsp;|&nbsp; Who has access: <strong>Anyone</strong></li>
-        <li>點 <strong>Deploy</strong>，複製產生的 <strong>Web app URL</strong></li>
-      </ol>
-
-      <p style="font-weight:600;color:var(--ink);margin-bottom:8px">Step 3 — 更新此 HTML 檔案</p>
-      <p style="margin-bottom:8px">找到檔案最底部 JS 中的這行，替換 URL：</p>
-      <pre style="background:#1e3a5f;color:#e2e8f0;padding:10px 14px;border-radius:var(--radius);font-size:12px;margin-bottom:16px">const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';  // ← 換成你的 Web App URL</pre>
-      <p>完成後上傳到 GitHub Pages，即可正式使用。</p>
-    </div>
-  </div>
 
 </div><!-- /page -->
 
@@ -454,103 +345,13 @@ async function submitForm(){
 }
 
 // ── PDF EXPORT ────────────────────────────
-function exportPDF(){
-  const {jsPDF} = window.jspdf;
-  const d = getFormData();
-  const doc = new jsPDF({unit:'mm',format:'a4'});
-  const pw = 190; let y = 15;
-
-  // Header
-  doc.setFillColor(30,58,95);
-  doc.rect(10,10,pw,10,'F');
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(7); doc.setFont('helvetica','normal');
-  doc.text('PROTEOMICS CORE LAB · IPMB / ABRC',13,16.5);
-  doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('Sample Submission Form for Protein MS/MS',pw/2+10,16.5,{align:'center'});
-  y = 25;
-
-  // Info section
-  doc.setTextColor(30,58,95); doc.setFontSize(8); doc.setFont('helvetica','bold');
-  doc.text('SUBMISSION & CONTACT INFORMATION', 13, y); y+=5;
-  doc.setTextColor(60,60,80); doc.setFont('helvetica','normal'); doc.setFontSize(8);
-  const infoRows = [
-    [`Date: ${d.date}`, `Lab/Room: ${d.lab}`, `PI: ${d.pi}`],
-    [`Contact: ${d.contact}`, `Email: ${d.email}`, `Phone: ${d.phone}`],
-    [`Project: ${d.project}`, `Project No.: ${d.projnum}`],
-  ];
-  infoRows.forEach(row=>{
-    const colW = pw/row.length;
-    row.forEach((cell,i)=>doc.text(cell,13+i*colW,y));
-    y+=6;
-  });
-  y+=2;
-
-  // Sample info
-  doc.setTextColor(30,58,95); doc.setFontSize(8); doc.setFont('helvetica','bold');
-  doc.text('SAMPLE INFORMATION', 13, y); y+=5;
-  doc.setTextColor(60,60,80); doc.setFont('helvetica','normal');
-  const si = [
-    [`1. Bio Source: ${d.bio}`,`3. Buffer: ${d.buffer}`],
-    [`2. Separation: ${d.sep}`,`4. PTM: ${d.ptm}`],
-    [`5. Instrument: ${d.inst}`,`6. Acq. Mode: ${d.mode}`],
-    [`7. Database: ${d.db}`,`8. Notes: ${d.notes}`],
-  ];
-  si.forEach(row=>{
-    row.forEach((cell,i)=>doc.text(doc.splitTextToSize(cell,pw/2-5), 13+i*(pw/2), y));
-    y+=6;
-  });
-
-  // Services
-  y+=2;
-  doc.setTextColor(30,58,95); doc.setFontSize(8); doc.setFont('helvetica','bold');
-  doc.text('SERVICE ITEMS SELECTED', 13, y); y+=5;
-  doc.setTextColor(60,60,80); doc.setFont('helvetica','normal');
-  const svcLabels = {A:'(A) Sample preparation',B:'(B) LC-MS/MS Analysis',
-    C:'(C) Phosphopeptide enrichment',D:'(D) 2D LC-MS/MS',
-    E:'(E) DB search – Protein ID',F:'(F) DB search – Protein Quant'};
-  const selSvcs = d.svcs ? d.svcs.split('+') : [];
-  let sx=13;
-  Object.entries(svcLabels).forEach(([k,v])=>{
-    const selected = selSvcs.includes(k);
-    doc.setFillColor(selected?30:220, selected?58:220, selected?95:220);
-    doc.rect(sx,y-3.5,60,5, selected?'F':'S');
-    doc.setTextColor(selected?255:140,selected?255:140,selected?255:140);
-    doc.setFontSize(7);
-    doc.text(v, sx+2, y);
-    sx += 63;
-    if(sx>200){sx=13;y+=7;}
-  });
-  y+=8;
-
-  // Sample table
-  doc.setTextColor(30,58,95); doc.setFontSize(8); doc.setFont('helvetica','bold');
-  doc.text('SAMPLE LIST', 13, y); y+=3;
-  doc.autoTable({
-    startY: y,
-    head:[['#','Sample Name','Vol (μL)','Service Items','Core No.','p/inj','MS/MS Note']],
-    body: d.samples.map((s,i)=>[i+1,s.name,s.vol,s.svc,s.coreNo,s.pinj,s.note]),
-    styles:{fontSize:8,cellPadding:2.5,font:'helvetica'},
-    headStyles:{fillColor:[30,58,95],textColor:255,fontStyle:'bold',fontSize:8},
-    alternateRowStyles:{fillColor:[245,246,248]},
-    columnStyles:{0:{cellWidth:8},2:{cellWidth:14},4:{cellWidth:18},5:{cellWidth:12}},
-    margin:{left:10,right:10},
-    theme:'grid'
-  });
-  const finalY = doc.lastAutoTable.finalY + 6;
-  doc.setFontSize(8); doc.setTextColor(80,80,100); doc.setFont('helvetica','italic');
-  doc.text('📍 Submit completed form with samples to A227, Agricultural Technology Building  |  pclipmb@gate.sinica.edu.tw', 10, finalY);
-
-  const fname = `PCL_${d.contact||'submission'}_${d.date||new Date().toISOString().split('T')[0]}.pdf`;
-  doc.save(fname);
-  showToast('PDF saved: ' + fname);
-}
+function exportPDF(){ window.print(); }
 
 // ── CLEAR ─────────────────────────────────
 function clearForm(){
   if(!confirm('Clear all form data?')) return;
   document.querySelectorAll('#st-body').forEach(b=>b.innerHTML='');
-  document.querySelectorAll('input:not([type=radio]):not([type=checkbox])').forEach(i=>{if(!i.closest('#setup-guide'))i.value='';});
+  document.querySelectorAll('input:not([type=radio]):not([type=checkbox])').forEach(i=>{if(true)i.value='';});
   document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(i=>i.checked=false);
   document.querySelectorAll('.chip,.svc-chip').forEach(c=>c.classList.remove('active'));
   rowId=0; updateCount();
@@ -570,3 +371,4 @@ for(let i=0;i<5;i++) addRow();
 </script>
 </body>
 </html>
+
